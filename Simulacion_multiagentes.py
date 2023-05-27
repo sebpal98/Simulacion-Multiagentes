@@ -36,13 +36,8 @@ class Carro:
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
         self.direction = direction
-        # self.collider_rect = collider_rect
-        self.stop = False
 
     def move(self):
-        if self.stop:
-            return
-
         if self.direction == 'up':
             self.rect.y -= CAR_SPEED
         elif self.direction == 'down':
@@ -52,19 +47,8 @@ class Carro:
         elif self.direction == 'right':
             self.rect.x += CAR_SPEED
 
-        # Verificar colisión con el semáforo
-        if self.check_collision(Semaforo.collider_rect) and Semaforo.is_red():
-            self.stop = True
-
-        # Verificar colisión con otros carros
-        for carro in carros_delante:
-            if self.check_collision(carro.collider_rect):
-                self.stop = True
-
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
-
-
 
 
 class Semaforo:
