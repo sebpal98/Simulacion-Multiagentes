@@ -4,6 +4,7 @@ import pygame
 WIDTH = 1200
 HEIGHT = 800
 
+#Primer cambio de pidual
 # Colores
 BLACK = (0, 0, 0)
 GREEN = (0, 128, 0)
