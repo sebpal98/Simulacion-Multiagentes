@@ -32,7 +32,7 @@ CAR_SPEED = 1
 
 
 class Carro:
-    def __init__(self, x, y, width, height, color, direction):
+    def __init__(self,x , y, width, height, color, direction):
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
         self.direction = direction
@@ -49,7 +49,6 @@ class Carro:
 
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
-
 
 class Semaforo:
     LIGHT_COLOR = (255, 0, 0)  # Rojo
