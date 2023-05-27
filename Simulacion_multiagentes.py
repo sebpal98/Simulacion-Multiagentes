@@ -81,10 +81,9 @@ def main():
     clock = pygame.time.Clock()
     # Crea un carro en la posicion  x, y, width, height, color, direction):
     car1 = Carro(650, 790, 30, 50, ORANGE, 'up')
-    car2 = Carro(1200,340, 50, 30, YELLOW, 'left')
+    car2 = Carro(1200,330, 90, 40, YELLOW, 'left')
     car3 = Carro(540,0, 30, 50, BLUE, 'down')
     car4 = Carro(0,450, 50, 30, WHITE, 'right')
-
 
     # Crear un semáforo en la posición (x, y, y luz de tamaño (20, 40) ) con colisionador de tamaño (x, y, de tamaño (20, 40) )
     semaforo1 = Semaforo(640, 500, (20, 20), 620, 500,(60, 50))
@@ -106,6 +105,7 @@ def main():
 
         screen.fill(GREEN)
 
+        
         pygame.draw.rect(screen, WHITE, (WIDTH/2 - ROAD_WIDTH/2 - SIDEWALK_WIDTH, 0, SIDEWALK_WIDTH, HEIGHT))
         pygame.draw.rect(screen, WHITE, (WIDTH/2 + ROAD_WIDTH/2, 0, SIDEWALK_WIDTH, HEIGHT))
         pygame.draw.rect(screen, WHITE, (0, HEIGHT/2 - ROAD_WIDTH/2 - SIDEWALK_WIDTH, WIDTH, SIDEWALK_WIDTH))
@@ -113,7 +113,10 @@ def main():
 
         pygame.draw.rect(screen, GREY, (WIDTH/2 - ROAD_WIDTH/2, 0, ROAD_WIDTH, HEIGHT))
         pygame.draw.rect(screen, GREY, (0, HEIGHT/2 - ROAD_WIDTH/2, WIDTH, ROAD_WIDTH))
-
+        pygame.draw.rect(screen, GREY, (0, HEIGHT/2 - ROAD_WIDTH/2, WIDTH, ROAD_WIDTH))
+        
+                
+        # Generador de las lineas amarillas de la carretera
         for y in range(0, HEIGHT, 80):
             pygame.draw.rect(screen, YELLOW, (WIDTH/2 - 5, y, 10, 40))
         for x in range(0, WIDTH, 80):
