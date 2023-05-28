@@ -10,7 +10,7 @@ GREEN = (36, 202, 61)
 GREY_ROAD = (54, 59, 55)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
-ORANGE = (255, 165, 0)
+ORANGE = (255, 105, 0)
 BLUE = (135, 206, 235)
 RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
@@ -22,7 +22,7 @@ ROAD_HEIGHT = 30
 # Dimensiones de las aceras
 sidewalk_width = 20
 
-window = pygame.display.set_mode((window_width, window_height))
+window = pygame.display.set_mode((window_width, window_height), pygame.SRCALPHA)
 pygame.display.set_caption("Simulación de Cruce Vehicular")
 clock = pygame.time.Clock()
 
@@ -31,7 +31,7 @@ class Semaforo:
     LIGHT_COLOR = (255, 0, 0)  # Rojo
     COLLIDER_COLOR = (0, 0, 255, 20)  # Azul transparente
 
-    def _init_(self, x_light, y_light,light_size , x_collider,y_collider, collider_size):
+    def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size):
         self.color = Semaforo.LIGHT_COLOR
         self.light_rect = pygame.Rect(x_light, y_light, light_size[0], light_size[1])
         self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
@@ -43,49 +43,30 @@ class Semaforo:
             self.color = Semaforo.LIGHT_COLOR
 
     def draw(self, screen):
-        pygame.draw.rect(screen, Semaforo.COLLIDER_COLOR, self.collider_rect)
+        transparent_collider_color = pygame.Color(0, 0, 255, 50)  # Color azul transparente
+
+        transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
+        transparent_surface.fill(transparent_collider_color)
+        screen.blit(transparent_surface, self.collider_rect)
+
         pygame.draw.rect(screen, self.color, self.light_rect)
 
-class Bus_Stop:
-    COLLIDER_COLOR = (0, 0, 255, 20)  # Azul transparente
 
-    def __init__(self, x, y, width, height, x_collider, y_collider, collider_width, collider_height):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.collider_rect = pygame.Rect(x_collider, y_collider, collider_width, collider_height)
+class Bus_Stop:
+    COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
+
+    def __init__(self, x, y, stop_size, x_collider, y_collider, collider_size):
+        self.rect = pygame.Rect(x, y, stop_size[0], stop_size[1])
+        self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
 
     def draw(self, screen):
-        pygame.draw.rect(screen, Bus_Stop.COLLIDER_COLOR, self.collider_rect)
-        pygame.draw.rect(screen, pygame.Color("orange"), self.rect)
+        transparent_collider_color = pygame.Color(0, 0, 255, 50)  # Color azul transparente
 
-def draw_elements():
-    roads()
-    cross_walks()
-    
-def main():
-    pygame.init()
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        
-        window.fill(GREEN)
-        draw_elements()
-        pygame.display.flip()
-        clock.tick(60)
+        transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
+        transparent_surface.fill(transparent_collider_color)
+        screen.blit(transparent_surface, self.collider_rect)
 
-    pygame.quit()
-
-if __name__ == '__main__':
-    main()
-    
-        
-        
-
-
-
-
-
+        pygame.draw.rect(screen, ORANGE, self.rect)
 
 def roads():
     # Primera carretera  VERTICAL de izquierda a derecha
@@ -166,7 +147,6 @@ def arrows():
         pygame.draw.rect(window, WHITE, (228+constant_roads*2, y+30, 5, 30))    
         pygame.draw.polygon(window, WHITE, ([230+constant_roads*2,y+30],[240+constant_roads*2,y+35],[230+constant_roads*2,y+15],[220+constant_roads*2,y+35]))
 
-
 def cross_walks():
      # Inersecciones y sus cebras
     def crosswalk_x(origin_x, origin_y ):
@@ -226,3 +206,31 @@ def cross_walks():
     # Verticales
     crosswalk_y(930, 550)
     crosswalk_y(1070, 550)   
+
+def draw_elements():
+    roads()
+    cross_walks()
+    road_stops()
+    
+def road_stops():
+    bus_stop1 = Bus_Stop(400,270,(60,20) ,400,230,(60,40))
+    bus_stop1.draw(window)
+    
+def main():
+    pygame.init()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        window.fill(GREEN)
+        draw_elements()
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == '__main__':
+    main()
+    
