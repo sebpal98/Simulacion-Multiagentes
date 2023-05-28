@@ -42,18 +42,51 @@ class Semaforo:
         else:
             self.color = Semaforo.LIGHT_COLOR
 
-    def is_red(self):
-        return self.color == Semaforo.LIGHT_COLOR
-
     def draw(self, screen):
         pygame.draw.rect(screen, Semaforo.COLLIDER_COLOR, self.collider_rect)
         pygame.draw.rect(screen, self.color, self.light_rect)
 
+class Bus_Stop:
+    COLLIDER_COLOR = (0, 0, 255, 20)  # Azul transparente
+
+    def __init__(self, x, y, width, height, x_collider, y_collider, collider_width, collider_height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.collider_rect = pygame.Rect(x_collider, y_collider, collider_width, collider_height)
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, Bus_Stop.COLLIDER_COLOR, self.collider_rect)
+        pygame.draw.rect(screen, pygame.Color("orange"), self.rect)
 
 def draw_elements():
     roads()
     cross_walks()
     
+def main():
+    pygame.init()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        window.fill(GREEN)
+        draw_elements()
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == '__main__':
+    main()
+    
+        
+        
+
+
+
+
+
+
 def roads():
     # Primera carretera  VERTICAL de izquierda a derecha
     pygame.draw.rect(window, WHITE, (130, 0, sidewalk_width, window_height))
@@ -111,10 +144,27 @@ def arrows():
         pygame.draw.polygon(window, WHITE, ([y,170+constant_roads],[y+5,160+constant_roads],[y-15,170+constant_roads],[y+5,180+constant_roads]))
         
         # Dibujar flechas verticales
-    for y in range(40, window_height, 260):
+    for y in range(40, window_height, 340):
+        # Verticales de abajo hacia arriba
+        pygame.draw.rect(window, WHITE, (168, y, 5, 30))    
+        pygame.draw.polygon(window, WHITE, ([170,y+30],[180,y+25],[170,y+50],[160,y+25]))
+        # Verticales de abajo abajo hacia arriba
+        pygame.draw.rect(window, WHITE, (228, y+30, 5, 30))    
+        pygame.draw.polygon(window, WHITE, ([230,y+30],[240,y+35],[230,y+15],[220,y+35]))
+        
+        # Dibujar las flechas Verticales
+        pygame.draw.rect(window, WHITE, (168+constant_roads, y, 5, 30))    
+        pygame.draw.polygon(window, WHITE, ([170+constant_roads,y+30],[180+constant_roads,y+25],[170+constant_roads,y+50],[160+constant_roads,y+25]))
+        # Verticales de abajo abajo hacia arriba
+        pygame.draw.rect(window, WHITE, (228+constant_roads, y+30, 5, 30))    
+        pygame.draw.polygon(window, WHITE, ([230+constant_roads,y+30],[240+constant_roads,y+35],[230+constant_roads,y+15],[220+constant_roads,y+35]))
+       
         #Dibujar las flechas Horizontales
-        pygame.draw.rect(window, WHITE, (170, y-2, 5, 30))    
-        pygame.draw.polygon(window, RED, ([170,y+30],[180,y+25],[170,y+50],[160,y+25]))
+        pygame.draw.rect(window, WHITE, (168+constant_roads*2, y, 5, 30))    
+        pygame.draw.polygon(window, WHITE, ([170+constant_roads*2,y+30],[180+constant_roads*2,y+25],[170+constant_roads*2,y+50],[160+constant_roads*2,y+25]))
+        # Verticales de abajo abajo hacia arriba
+        pygame.draw.rect(window, WHITE, (228+constant_roads*2, y+30, 5, 30))    
+        pygame.draw.polygon(window, WHITE, ([230+constant_roads*2,y+30],[240+constant_roads*2,y+35],[230+constant_roads*2,y+15],[220+constant_roads*2,y+35]))
 
 
 def cross_walks():
@@ -176,26 +226,3 @@ def cross_walks():
     # Verticales
     crosswalk_y(930, 550)
     crosswalk_y(1070, 550)   
-    
-        
-        
-
-
-def main():
-    pygame.init()
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        
-        window.fill(GREEN)
-        draw_elements()
-        pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
-
-
-if __name__ == '__main__':
-    main()
