@@ -81,7 +81,8 @@ def main():
     clock = pygame.time.Clock()
     # Crea un carro en la posicion  x, y, width, height, color, direction):
     car1 = Carro(650, 790, 30, 50, ORANGE, 'up')
-    car2 = Carro(1200,330, 90, 40, YELLOW, 'left')
+    car2 = Carro(1200, 330, 30, 50, ORANGE, 'left')
+    # car2 = Carro(1200,330, 90, 40, YELLOW, 'left')
     car3 = Carro(540,0, 30, 50, BLUE, 'down')
     car4 = Carro(0,450, 50, 30, WHITE, 'right')
 
