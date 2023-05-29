@@ -42,7 +42,9 @@ class Carro:
         self.color = color
         self.direction = direction
 
-    def move(self):
+    def move(self,semaforo):
+        if semaforo.is_red() and self.has_collision: # No hacer nada si hay una colisión y el semáforo está en rojo
+            return  #No hace nada osea no se mueve jijiji
         if self.direction == 'up':
             self.rect[1] += 2
         elif self.direction == 'down':
