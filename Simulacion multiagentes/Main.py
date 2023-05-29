@@ -152,6 +152,8 @@ class VehicleGenerator(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.cars = []
+        self.busses = []
+        self.persons = []
         self.lock = threading.Lock()
 
     def run(self):
@@ -159,16 +161,22 @@ class VehicleGenerator(threading.Thread):
         while True:
             if num_cars_per_bus < 3:
                 self.addCarToCars(self.validateCar(self.generateVehicle()))
-                self.addCarToCars(self.validatePerson(self.generatePerson()))
+                self.addPersonToPersons(self.validatePerson(self.generatePerson()))
                 num_cars_per_bus+=1
             else:
-                self.addCarToCars(self.validateBus(self.generateBus()))
+                self.addBusToBusses(self.validateBus(self.generateBus()))
                 print('BUUUUUUUS')
                 num_cars_per_bus=0
 
             for car in self.cars:
                 if not self.verifyIsInMap(car):
                     self.deleteCarFromCars(car)
+            for bus in self.busses:
+                if not self.verifyIsInMap(bus):
+                    self.deletebusFrombuss(bus)
+            for person in self.persons:
+                if not self.verifyIsInMap(person):
+                    self.deletePersonFromPersons(person)
             time.sleep(1.5)
 
     def addCarToCars(self, car):
@@ -182,6 +190,32 @@ class VehicleGenerator(threading.Thread):
             self.lock.acquire()  # Adquirir el bloqueo
             try:
                 self.cars.remove(car)
+            finally:
+                self.lock.release()  # Liberar el bloqueo
+    def addBusToBusses(self, bus):
+            self.lock.acquire()  # Adquirir el bloqueo
+            try:
+                self.busses.append(bus)
+            finally:
+                self.lock.release()  # Liberar el bloqueo
+                
+    def deleteBusFromBusses(self, bus):
+            self.lock.acquire()  # Adquirir el bloqueo
+            try:
+                self.busses.remove(bus)
+            finally:
+                self.lock.release()  # Liberar el bloqueo
+    def addPersonToPersons(self, person):
+            self.lock.acquire()  # Adquirir el bloqueo
+            try:
+                self.persons.append(person)
+            finally:
+                self.lock.release()  # Liberar el bloqueo
+                
+    def deletePersonFromPersons(self, person):
+            self.lock.acquire()  # Adquirir el bloqueo
+            try:
+                self.persons.remove(person)
             finally:
                 self.lock.release()  # Liberar el bloqueo
                 
@@ -199,14 +233,14 @@ class VehicleGenerator(threading.Thread):
         while person==0:
             person = self.generatePerson()
         return person
-    def verifyIsInMap(self, car):
-        if car.direction == 'right' and car.rect.x>1190:
+    def verifyIsInMap(self, obj):
+        if obj.direction == 'right' and obj.rect.x>1190:
             return False
-        if car.direction == 'left' and car.rect.x<0:
+        if obj.direction == 'left' and obj.rect.x<0:
             return False
-        if car.direction == 'up' and car.rect.y>790:
+        if obj.direction == 'up' and obj.rect.y>790:
             return False
-        if car.direction == 'down' and car.rect.y<0:
+        if obj.direction == 'down' and obj.rect.y<0:
             return False
         else:
             return True
@@ -680,10 +714,21 @@ def main():
         window.fill(GREEN)
         draw_elements(GROUP_1, GROUP_2, GROUP_3, GROUP_4)
         cars=generator.cars
+        busses=generator.busses
+        persons=generator.persons
+
         for car in cars:
             car.draw_collider(window)
             pygame.draw.rect(window, car.color, car.rect)
             car.move()
+        for bus in busses:
+            bus.draw_collider(window)
+            pygame.draw.rect(window, bus.color, bus.rect)
+            bus.move()
+        for person in persons:
+            person.draw_collider(window)
+            pygame.draw.rect(window, person.color, person.rect)
+            person.move()
         check_collision_between_cars(cars)      
         pygame.display.flip()
         clock.tick(animation_speed)
