@@ -15,6 +15,9 @@ BLUE = (135, 206, 235)
 RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
 
+# MODIFICADOR DE COLOR CAJAS DE COLISION
+COLLIDER_COLOR = (0, 0, 255, 150)  # Azul transparente
+
 # Dimensiones de las carreteras
 ROAD_WIDTH = 120
 ROAD_HEIGHT = 30
@@ -27,46 +30,45 @@ pygame.display.set_caption("Simulación de Cruce Vehicular")
 clock = pygame.time.Clock()
 
 
-class Semaforo:
+class Traffic_Light:
     LIGHT_COLOR = (255, 0, 0)  # Rojo
-    COLLIDER_COLOR = (0, 0, 255, 20)  # Azul transparente
 
     def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size):
-        self.color = Semaforo.LIGHT_COLOR
+        self.color = Traffic_Light.LIGHT_COLOR
         self.light_rect = pygame.Rect(x_light, y_light, light_size[0], light_size[1])
         self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
 
     def change_color(self):
-        if self.color == Semaforo.LIGHT_COLOR:
+        if self.color == Traffic_Light.LIGHT_COLOR:
             self.color = (0, 255, 0)  # Verde
         else:
-            self.color = Semaforo.LIGHT_COLOR
+            self.color = Traffic_Light.LIGHT_COLOR
 
-    def draw(self, screen):
-        transparent_collider_color = pygame.Color(0, 0, 255, 50)  # Color azul transparente
-
+    def draw(self, screen):    
         transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
-        transparent_surface.fill(transparent_collider_color)
+        transparent_surface.fill(COLLIDER_COLOR)
         screen.blit(transparent_surface, self.collider_rect)
-
         pygame.draw.rect(screen, self.color, self.light_rect)
 
-
 class Bus_Stop:
-    COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
+    
 
     def __init__(self, x, y, stop_size, x_collider, y_collider, collider_size):
         self.rect = pygame.Rect(x, y, stop_size[0], stop_size[1])
         self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
 
     def draw(self, screen):
-        transparent_collider_color = pygame.Color(0, 0, 255, 50)  # Color azul transparente
 
         transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
-        transparent_surface.fill(transparent_collider_color)
+        transparent_surface.fill(COLLIDER_COLOR)
         screen.blit(transparent_surface, self.collider_rect)
-
         pygame.draw.rect(screen, ORANGE, self.rect)
+
+def draw_elements():
+    roads()
+    cross_walks()
+    road_stops()
+    traffic_lights()
 
 def roads():
     # Primera carretera  VERTICAL de izquierda a derecha
@@ -201,21 +203,50 @@ def cross_walks():
     
     # Sexta interseccion
     pygame.draw.rect(window, GREY_ROAD, (930, 550, ROAD_WIDTH+40, ROAD_WIDTH))
+
     crosswalk_x(950, 530)
     crosswalk_x(950, 670)
     # Verticales
     crosswalk_y(930, 550)
     crosswalk_y(1070, 550)   
 
-def draw_elements():
-    roads()
-    cross_walks()
-    road_stops()
-    
 def road_stops():
-    bus_stop1 = Bus_Stop(400,270,(60,20) ,400,230,(60,40))
+    bus_stop1 = Bus_Stop(400,270,(60,20) ,460,230,(5,40))
     bus_stop1.draw(window)
     
+    bus_stop2 = Bus_Stop(330,130,(60,20) ,325,150,(5,40))
+    bus_stop2.draw(window)
+    
+    bus_stop3 = Bus_Stop(930,440,(20,60) ,950,500,(40,5))
+    bus_stop3.draw(window)
+    
+    bus_stop4 = Bus_Stop(670,370,(20,60) ,630,370,(40,5))
+    bus_stop4.draw(window)
+    
+    bus_stop5 = Bus_Stop(130,360,(20,60) ,150,420,(40,5))
+    bus_stop5.draw(window)
+    
+    bus_stop6 = Bus_Stop(810,670,(60,20) ,870,630,(5,40))
+    bus_stop6.draw(window)
+    
+    bus_stop7 = Bus_Stop(340,530,(60,20) ,340,550,(5,40))
+    bus_stop7.draw(window)
+
+def traffic_lights():
+    CONSTANT_Y = 400
+    for y in range(170, window_width, 400):
+        traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20))
+        traffic_light1.draw(window)
+        traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
+        traffic_light1.draw(window)
+        
+    for y in range(240, window_width, 400):
+        traffic_light1 = Traffic_Light(y,260,(10,10) , y-30,280,(50,20))
+        traffic_light1.draw(window)
+        traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-30,280+CONSTANT_Y,(50,20))
+        traffic_light1.draw(window)
+    
+ 
 def main():
     pygame.init()
     running = True
