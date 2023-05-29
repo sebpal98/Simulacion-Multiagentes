@@ -51,9 +51,6 @@ def get_numbers(cantidad):
     es_viable = poker_test(numeros_aleatorios)
     
     if es_viable:
-      print("El conjunto de números es viable como números pseudoaleatorios.")
       return numeros_aleatorios
-    else:
-      print("El conjunto de números no es viable como números pseudoaleatorios.") 
-      #print(numeros_aleatorios)
+
 
