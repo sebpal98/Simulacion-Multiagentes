@@ -44,18 +44,36 @@ class Carro:
 
     def move(self):
         if self.direction == 'up':
-            self.rect[1] += 2
+            self.rect[1] += 2.5
         elif self.direction == 'down':
-            self.rect[1] -= 2
+            self.rect[1] -= 2.5
         elif self.direction == 'left':
-            self.rect[0] -= 2
+            self.rect[0] -= 2.5
         elif self.direction == 'right':
-            self.rect[0] += 2
+            self.rect[0] += 2.5
     def __str__(self):
         return f"Carrito: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
-    
+class Bus:
+    def __init__(self, x, y,width, height, color, direction):
+        self.rect = pygame.Rect(x,y,width,height)
+        self.color = color
+        self.direction = direction
+
+    def move(self):
+        if self.direction == 'up':
+            self.rect[1] += 1.5
+        elif self.direction == 'down':
+            self.rect[1] -= 1.5
+        elif self.direction == 'left':
+            self.rect[0] -= 1.5
+        elif self.direction == 'right':
+            self.rect[0] += 1.5
+    def __str__(self):
+        return f"Bus: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
+    def check_collision(self, rect):
+        return self.rect.colliderect(rect)
 class VehicleGenerator(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -63,8 +81,16 @@ class VehicleGenerator(threading.Thread):
         self.lock = threading.Lock()
 
     def run(self):
+        num_cars_per_bus = 0
         while True:
-            self.addCarToCars(self.validVehicle(self.generateVehicle()))
+            if num_cars_per_bus < 3:
+                self.addCarToCars(self.validateCar(self.generateVehicle()))
+                num_cars_per_bus+=1
+            else:
+                self.addCarToCars(self.validateBus(self.generateBus()))
+                print('BUUUUUUUS')
+                num_cars_per_bus=0
+
             for car in self.cars:
                 if not self.verifyIsInMap(car):
                     self.deleteCarFromCars(car)
@@ -82,10 +108,14 @@ class VehicleGenerator(threading.Thread):
                 self.cars.remove(car)
             finally:
                 self.lock.release()  # Liberar el bloqueo
-    def validVehicle(self,vehicle):
-        while vehicle==0:
-            vehicle = self.generateVehicle()
-        return vehicle
+    def validateCar(self,car):
+        while car==0:
+            car = self.generateVehicle()
+        return car
+    def validateBus(self,bus):
+        while bus==0:
+            bus = self.generateBus()
+        return bus
     def verifyIsInMap(self, car):
         if car.direction == 'right' and car.rect.x>1190:
             return False
@@ -97,6 +127,34 @@ class VehicleGenerator(threading.Thread):
             return False
         else:
             return True
+    def generateBus(self):
+        gen = GenerateNums.get_numbers(350)
+        numchoiced = random.choice(gen)
+        seed= int(numchoiced*10000* time.time())
+        num = self.MonteCarlo(1,seed)
+        coordenada = self.getPlaceToSpawnByNum(num[0])
+        width=random.choice([35,85])
+        height=0
+        direction=''
+        if width == 85:
+            height = 35
+            if coordenada[0]==0:
+                direction = 'right'
+                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+
+            if coordenada[0]==1190:
+                direction = 'left'
+                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+        else:
+            height=85
+            if coordenada[1]==0:
+                direction='up'
+                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+
+            if coordenada[1]==790:
+                direction='down'
+                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+        return 0
     def generateVehicle(self):
         gen = GenerateNums.get_numbers(350)
         numchoiced = random.choice(gen)
@@ -107,28 +165,29 @@ class VehicleGenerator(threading.Thread):
         print(f'num: {num[0]}')
         coordenada = self.getPlaceToSpawnByNum(num[0])
         width=random.choice([30,50])
+        color=random.choice([BLUE,YELLOW, GREEN,ORANGE,WHITE,BLACK])
         height=0
         direction=''
         if width == 50:
             height = 30
             if coordenada[0]==0:
                 direction = 'right'
-                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+                return Carro(coordenada[0],coordenada[1],width, height, color, direction)
 
             if coordenada[0]==1190:
                 direction = 'left'
-                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
-
+                return Carro(coordenada[0],coordenada[1],width, height, color, direction)
         else:
             height=50
             if coordenada[1]==0:
                 direction='up'
-                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+                return Carro(coordenada[0],coordenada[1],width, height, color, direction)
 
             if coordenada[1]==790:
                 direction='down'
-                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+                return Carro(coordenada[0],coordenada[1],width, height, color, direction)
         return 0
+    
     def getPlaceToSpawnByNum(self,number):
         if number < 0.1:
             return (0,230)
