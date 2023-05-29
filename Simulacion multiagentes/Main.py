@@ -21,9 +21,9 @@ ORANGE = (255, 105, 0)
 BLUE = (135, 206, 235)
 RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
-
+SKIN =(253,221,202)
 # MODIFICADOR DE COLOR CAJAS DE COLISION
-COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
+COLLIDER_COLOR = (0, 0, 255, 255)  # Azul transparente
 
 # Dimensiones de las carreteras
 ROAD_WIDTH = 120
@@ -45,17 +45,17 @@ class Carro:
 
     def move(self):
         if self.direction == 'up':
-            self.collider_rect.y += 2
-            self.rect[1] += 2
+            self.collider_rect.y += 3
+            self.rect[1] += 3
         elif self.direction == 'down':
-            self.collider_rect.y -= 2
-            self.rect[1] -= 2
+            self.collider_rect.y -= 3
+            self.rect[1] -= 3
         elif self.direction == 'left':
-            self.collider_rect.x -= 2
-            self.rect[0] -= 2
+            self.collider_rect.x -= 3
+            self.rect[0] -= 3
         elif self.direction == 'right':
-            self.collider_rect.x += 2
-            self.rect[0] += 2
+            self.collider_rect.x += 3
+            self.rect[0] += 3
     def __str__(self):
         return f"Carrito: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
     
@@ -77,23 +77,54 @@ class Bus:
 
     def move(self):
         if self.direction == 'up':
-            self.collider_rect.y += 1.5
-            self.rect[1] += 1.5
+            self.collider_rect.y += 2
+            self.rect[1] += 2
         elif self.direction == 'down':
-            self.collider_rect.y += 1.5
-            self.rect[1] -= 1.5
+            self.collider_rect.y -= 2
+            self.rect[1] -= 2
         elif self.direction == 'left':
-            self.collider_rect.x += 1.5
-            self.rect[0] -= 1.5
+            self.collider_rect.x -= 2
+            self.rect[0] -= 2
         elif self.direction == 'right':
-            self.collider_rect.x += 1.5
-            self.rect[0] += 1.5
+            self.collider_rect.x += 2
+            self.rect[0] += 2
     def __str__(self):
         return f"Bus: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
-    
+    def draw_collider(self,screen):
+        transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
+        transparent_surface.fill(COLLIDER_COLOR)
+        screen.blit(transparent_surface, self.collider_rect)
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
-    
+
+class Person:
+    def __init__(self, x, y,width, height, color, direction):
+        self.rect = pygame.Rect(x,y,width,height)
+        self.color = color
+        self.direction = direction
+        self.collider_rect = pygame.Rect(x-2, y-2, width+5, height+5)
+
+    def move(self):
+        if self.direction == 'up':
+            self.collider_rect.y += 1
+            self.rect[1] += 1
+        elif self.direction == 'down':
+            self.collider_rect.y += 1
+            self.rect[1] -= 1
+        elif self.direction == 'left':
+            self.collider_rect.x += 1
+            self.rect[0] -= 1
+        elif self.direction == 'right':
+            self.collider_rect.x += 1
+            self.rect[0] += 1
+    def __str__(self):
+        return f"Person: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
+    def draw_collider(self,screen):
+        transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
+        transparent_surface.fill(COLLIDER_COLOR)
+        screen.blit(transparent_surface, self.collider_rect)
+    def check_collision(self, rect):
+        return self.rect.colliderect(rect) 
 class VehicleGenerator(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -105,6 +136,7 @@ class VehicleGenerator(threading.Thread):
         while True:
             if num_cars_per_bus < 3:
                 self.addCarToCars(self.validateCar(self.generateVehicle()))
+                self.addCarToCars(self.validatePerson(self.generatePerson()))
                 num_cars_per_bus+=1
             else:
                 self.addCarToCars(self.validateBus(self.generateBus()))
@@ -139,7 +171,10 @@ class VehicleGenerator(threading.Thread):
         while bus==0:
             bus = self.generateBus()
         return bus
-    
+    def validatePerson(self,person):
+        while person==0:
+            person = self.generatePerson()
+        return person
     def verifyIsInMap(self, car):
         if car.direction == 'right' and car.rect.x>1190:
             return False
@@ -165,22 +200,47 @@ class VehicleGenerator(threading.Thread):
             height = 35
             if coordenada[0]==0:
                 direction = 'right'
-                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+                return Bus(coordenada[0],coordenada[1],width, height, RED, direction)
 
             if coordenada[0]==1190:
                 direction = 'left'
-                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+                return Bus(coordenada[0],coordenada[1],width, height, RED, direction)
         else:
             height=85
             if coordenada[1]==0:
                 direction='up'
-                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+                return Bus(coordenada[0],coordenada[1],width, height, RED, direction)
 
             if coordenada[1]==790:
                 direction='down'
-                return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
+                return Bus(coordenada[0],coordenada[1],width, height, RED, direction)
         return 0
 
+    def generatePerson(self):
+        gen = GenerateNums.get_numbers(350)
+        numchoiced = random.choice(gen)
+        seed= int(numchoiced*10000* time.time())
+        num = self.MonteCarlo(1,seed)
+        coordenada = self.getPlaceToSpawnPersonByNum(num[0])
+        height=8
+        width=8
+        direction=''
+        if coordenada[0]==0:
+            direction = 'right'
+            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+
+        if coordenada[0]==1190:
+            direction = 'left'
+            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+        
+        if coordenada[1]==0:
+            direction='up'
+            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+
+        if coordenada[1]==790:
+            direction='down'
+            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+        return 0
     def generateVehicle(self):
         gen = GenerateNums.get_numbers(350)
         numchoiced = random.choice(gen)
@@ -214,7 +274,27 @@ class VehicleGenerator(threading.Thread):
                 return Carro(coordenada[0],coordenada[1],width, height, color, direction)
         return 0
     
-    
+    def getPlaceToSpawnPersonByNum(self,number):
+        if number < 0.1:
+            return (0,130)
+        elif number < 0.2:
+            return (0,530)
+        elif number < 0.3:
+            return (1190, 270)
+        elif number < 0.4:
+            return (1190, 530)
+        elif number < 0.5:
+            return (270, 0)
+        elif number < 0.6:
+            return (670, 0)
+        elif number < 0.7:
+            return (1070,0)
+        elif number < 0.8:
+            return (130, 790)
+        elif number < 0.9:
+            return (530, 790)
+        else:
+            return (930,790)
     def getPlaceToSpawnByNum(self,number):
         if number < 0.1:
             return (0,230)
@@ -539,7 +619,7 @@ def main():
             pygame.draw.rect(window, car.color, car.rect)
             car.move()
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(40)
     pygame.quit()
 
 
