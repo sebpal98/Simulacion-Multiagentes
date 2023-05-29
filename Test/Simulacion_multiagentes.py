@@ -14,7 +14,7 @@ WHITE = (255, 255, 255)
 ORANGE = (255, 165, 0)
 BLUE = (135, 206, 235)
 RED = (255, 0, 0)
-GREEN_LIGHT = (0, 255, 0)
+GREEN_LIGHT = (0, 255, 50)
 
 # Dimensiones de las carreteras
 ROAD_WIDTH = 200
