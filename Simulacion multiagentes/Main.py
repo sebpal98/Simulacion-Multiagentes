@@ -36,6 +36,10 @@ window = pygame.display.set_mode((window_width, window_height), pygame.SRCALPHA)
 pygame.display.set_caption("Simulación de Cruce Vehicular")
 clock = pygame.time.Clock()
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 class Carro:
     def __init__(self, x, y,width, height, color, direction):
         self.rect = pygame.Rect(x,y,width,height)
@@ -179,18 +183,31 @@ class VehicleGenerator(threading.Thread):
         return segmento
 
 class Traffic_Light:
+<<<<<<< Updated upstream
     LIGHT_COLOR = (255, 0, 0)  # Rojo
 
     def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size):
         self.color = Traffic_Light.LIGHT_COLOR
+=======
+    TRAFFICT_LIGHT_COLOR = (255,0,0) #ROJO
+    def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size):
+        self.color = Traffic_Light.TRAFFICT_LIGHT_COLOR
+>>>>>>> Stashed changes
         self.light_rect = pygame.Rect(x_light, y_light, light_size[0], light_size[1])
         self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
 
     def change_color(self):
+<<<<<<< Updated upstream
         if self.color == Traffic_Light.LIGHT_COLOR:
             self.color = (0, 255, 0)  # Verde
         else:
             self.color = Traffic_Light.LIGHT_COLOR
+=======
+        #if self.color == Traffic_Light.TRAFFICT_LIGHT_COLOR:
+        self.color = (0, 255, 0)  # Verde
+        #else:
+            #self.color = Traffic_Light.TRAFFICT_LIGHT_COLOR
+>>>>>>> Stashed changes
 
     def draw(self, screen):    
         transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
@@ -382,50 +399,96 @@ def road_stops():
 
 def traffic_lights():
     CONSTANT_Y = 400
+<<<<<<< Updated upstream
+=======
+    if(len(arr_traffic_Lights) < 25):
+        return
+>>>>>>> Stashed changes
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(170, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20))
         traffic_light1.draw(window)
+<<<<<<< Updated upstream
         arr_traffic_Lights.append(traffic_light1)
         
         traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
         traffic_light1.draw(window)
         arr_traffic_Lights.append(traffic_light1)
+=======
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+        
+        traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
+        traffic_light1.draw(window)
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+>>>>>>> Stashed changes
         
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(240, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,260,(10,10) , y-10,280,(50,20))
         traffic_light1.draw(window)
+<<<<<<< Updated upstream
         arr_traffic_Lights.append(traffic_light1)
         
         traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
         traffic_light1.draw(window)
         arr_traffic_Lights.append(traffic_light1)
+=======
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+        
+        traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
+        traffic_light1.draw(window)
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+>>>>>>> Stashed changes
         
      # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(260, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,170,(10,10) , y+20,140,(20,50))
         traffic_light1.draw(window)
+<<<<<<< Updated upstream
         arr_traffic_Lights.append(traffic_light1)
         
         traffic_light1 = Traffic_Light(y,170+CONSTANT_Y,(10,10) , y+20,140+CONSTANT_Y,(20,50))
         traffic_light1.draw(window)
         arr_traffic_Lights.append(traffic_light1)
+=======
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+        
+        traffic_light1 = Traffic_Light(y,170+CONSTANT_Y,(10,10) , y+20,140+CONSTANT_Y,(20,50))
+        traffic_light1.draw(window)
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+>>>>>>> Stashed changes
         
     for y in range(150, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,240,(10,10) , y-30,230,(20,50))
         traffic_light1.draw(window)
+<<<<<<< Updated upstream
         arr_traffic_Lights.append(traffic_light1)
         
         traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
         traffic_light1.draw(window)
         arr_traffic_Lights.append(traffic_light1)
+=======
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+        
+        traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
+        traffic_light1.draw(window)
+        if(len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+>>>>>>> Stashed changes
 
 
 
 def main():
     pygame.init()
     cars=[]
+<<<<<<< Updated upstream
     
     generator = VehicleGenerator()
     generator.start()
@@ -435,13 +498,42 @@ def main():
     # Set the timer interval for the custom event (2000 milliseconds = 2 seconds)
     pygame.time.set_timer(CUSTOM_EVENT, 2000)
 
+=======
+    generator = VehicleGenerator()
+    generator.start()
+    CUSTOM_EVENT = pygame.USEREVENT + 1
+    # Set the timer interval for the custom event (2000 milliseconds = 2 seconds)
+    pygame.time.set_timer(CUSTOM_EVENT, 2000)
+    draw_elements()
+>>>>>>> Stashed changes
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == CUSTOM_EVENT: # Event triggered every two seconds
+<<<<<<< Updated upstream
                 print("Custom event occurred!")
+=======
+                    arr_traffic_Lights[0].change_color()
+                    arr_traffic_Lights[0].draw(window)
+                    arr_traffic_Lights[1].change_color()
+                    arr_traffic_Lights[1].draw(window)
+                    arr_traffic_Lights[2].change_color()
+                    arr_traffic_Lights[2].draw(window)
+                    arr_traffic_Lights[3].change_color()
+                    arr_traffic_Lights[3].draw(window)
+                    arr_traffic_Lights[4].change_color()
+                    arr_traffic_Lights[4].draw(window)
+                    arr_traffic_Lights[5].change_color()
+                    arr_traffic_Lights[5].draw(window)
+                    arr_traffic_Lights[6].change_color()
+                    arr_traffic_Lights[6].draw(window)
+                    arr_traffic_Lights[7].change_color()
+                    arr_traffic_Lights[7].draw(window)
+                    print("change color")
+     
+>>>>>>> Stashed changes
         window.fill(GREEN)
         draw_elements()
         cars=generator.cars
