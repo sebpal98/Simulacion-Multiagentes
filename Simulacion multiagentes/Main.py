@@ -66,25 +66,34 @@ class Carro:
     
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
+
+
 class Bus:
     def __init__(self, x, y,width, height, color, direction):
         self.rect = pygame.Rect(x,y,width,height)
         self.color = color
         self.direction = direction
+        self.collider_rect = pygame.Rect(x-2, y-2, width+5, height+5)
 
     def move(self):
         if self.direction == 'up':
+            self.collider_rect.y += 1.5
             self.rect[1] += 1.5
         elif self.direction == 'down':
+            self.collider_rect.y += 1.5
             self.rect[1] -= 1.5
         elif self.direction == 'left':
+            self.collider_rect.x += 1.5
             self.rect[0] -= 1.5
         elif self.direction == 'right':
+            self.collider_rect.x += 1.5
             self.rect[0] += 1.5
     def __str__(self):
         return f"Bus: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
+    
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
+    
 class VehicleGenerator(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -113,20 +122,24 @@ class VehicleGenerator(threading.Thread):
                 self.cars.append(car)
             finally:
                 self.lock.release()  # Liberar el bloqueo
+                
     def deleteCarFromCars(self, car):
             self.lock.acquire()  # Adquirir el bloqueo
             try:
                 self.cars.remove(car)
             finally:
                 self.lock.release()  # Liberar el bloqueo
+                
     def validateCar(self,car):
         while car==0:
             car = self.generateVehicle()
         return car
+    
     def validateBus(self,bus):
         while bus==0:
             bus = self.generateBus()
         return bus
+    
     def verifyIsInMap(self, car):
         if car.direction == 'right' and car.rect.x>1190:
             return False
