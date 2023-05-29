@@ -23,7 +23,7 @@ RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
 
 # MODIFICADOR DE COLOR CAJAS DE COLISION
-COLLIDER_COLOR = (0, 0, 255, 250)  # Azul transparente
+COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
 
 # Dimensiones de las carreteras
 ROAD_WIDTH = 120
@@ -41,19 +41,29 @@ class Carro:
         self.rect = pygame.Rect(x,y,width,height)
         self.color = color
         self.direction = direction
+        self.collider_rect = pygame.Rect(x-2, y-2, width+5, height+5)
 
     def move(self):
         if self.direction == 'up':
-            self.rect[1] += 2.5
+            self.collider_rect.y += 2
+            self.rect[1] += 2
         elif self.direction == 'down':
-            self.rect[1] -= 2.5
+            self.collider_rect.y -= 2
+            self.rect[1] -= 2
         elif self.direction == 'left':
-            self.rect[0] -= 2.5
+            self.collider_rect.x -= 2
+            self.rect[0] -= 2
         elif self.direction == 'right':
-            self.rect[0] += 2.5
-            
+            self.collider_rect.x += 2
+            self.rect[0] += 2
     def __str__(self):
         return f"Carrito: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
+    
+    def draw_collider(self,screen):
+        transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
+        transparent_surface.fill(COLLIDER_COLOR)
+        screen.blit(transparent_surface, self.collider_rect)
+    
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
 class Bus:
@@ -128,6 +138,7 @@ class VehicleGenerator(threading.Thread):
             return False
         else:
             return True
+
     def generateBus(self):
         gen = GenerateNums.get_numbers(350)
         numchoiced = random.choice(gen)
@@ -156,6 +167,7 @@ class VehicleGenerator(threading.Thread):
                 direction='down'
                 return Carro(coordenada[0],coordenada[1],width, height, RED, direction)
         return 0
+
     def generateVehicle(self):
         gen = GenerateNums.get_numbers(350)
         numchoiced = random.choice(gen)
@@ -271,6 +283,8 @@ def draw_elements():
     cross_walks()
     road_stops()
     traffic_lights()
+    # draw_grid()
+    # mouse_coordenates()
 
 def roads():
     # Primera carretera  VERTICAL de izquierda a derecha
@@ -466,7 +480,31 @@ def traffic_lights():
         
         traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
         traffic_light1.draw(window)
+
+# Configuración de la cuadrícula
+grid_size = 10
+grid_color = (200, 200, 200)  # Color de la cuadrícula en formato RGB
+def draw_grid():
+    # Dibujar líneas verticales
+    for x in range(0, window_width, grid_size):
+        pygame.draw.line(window, grid_color, (x, 0), (x, window_height))
+
+    # Dibujar líneas horizontales
+    for y in range(0, window_height, grid_size):
+        pygame.draw.line(window, grid_color, (0, y), (window_width, y))
         
+def mouse_coordenates():
+    # Obtener las coordenadas del cursor relativas a la cuadrícula
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    grid_x = (mouse_x // grid_size) * grid_size
+    grid_y = (mouse_y // grid_size) * grid_size
+    # Dibujar la cuadrícula
+    draw_grid()
+    # Mostrar las coordenadas del cursor en la cuadrícula
+    font = pygame.font.Font(None, 30)
+    text = font.render(f"({grid_x}, {grid_y})", True, WHITE)
+    window.blit(text, (10, 10))
+ 
 def main():
     pygame.init()
     cars=[]
@@ -483,6 +521,7 @@ def main():
         draw_elements()
         cars=generator.cars
         for car in cars:
+            car.draw_collider(window)
             pygame.draw.rect(window, car.color, car.rect)
             car.move()
         pygame.display.flip()
