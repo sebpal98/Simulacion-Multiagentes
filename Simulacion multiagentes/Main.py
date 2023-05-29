@@ -174,7 +174,6 @@ class VehicleGenerator(threading.Thread):
 
 class Traffic_Light:
     LIGHT_COLOR = (255, 0, 0)  # Rojo
-
     def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size):
         self.color = Traffic_Light.LIGHT_COLOR
         self.light_rect = pygame.Rect(x_light, y_light, light_size[0], light_size[1])
@@ -193,8 +192,6 @@ class Traffic_Light:
         pygame.draw.rect(screen, self.color, self.light_rect)
 
 class Bus_Stop:
-    
-
     def __init__(self, x, y, stop_size, x_collider, y_collider, collider_size):
         self.rect = pygame.Rect(x, y, stop_size[0], stop_size[1])
         self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
@@ -376,40 +373,54 @@ def road_stops():
 
 def traffic_lights():
     CONSTANT_Y = 400
+    semaforos = []
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(170, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20))
+        traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20)) #Semaforo
+        semaforos.append(traffic_light1)
         traffic_light1.draw(window)
         
-        traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
+        traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20)) #Semaforo
+        semaforos.append(traffic_light1)
         traffic_light1.draw(window)
         
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(240, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,260,(10,10) , y-10,280,(50,20))
+        semaforos.append(traffic_light1)
         traffic_light1.draw(window)
         
         traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
+        semaforos.append(traffic_light1)
         traffic_light1.draw(window)
         
      # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(260, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,170,(10,10) , y+20,140,(20,50))
-        traffic_light1.draw(window)
+        traffic_light2 = Traffic_Light(y,170,(10,10) , y+20,140,(20,50))
+        semaforos.append(traffic_light2)
+        traffic_light2.draw(window)
         
-        traffic_light1 = Traffic_Light(y,170+CONSTANT_Y,(10,10) , y+20,140+CONSTANT_Y,(20,50))
-        traffic_light1.draw(window)
+        traffic_light2 = Traffic_Light(y,170+CONSTANT_Y,(10,10) , y+20,140+CONSTANT_Y,(20,50))
+        semaforos.append(traffic_light2)
+        traffic_light2.draw(window)
         
     for y in range(150, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,240,(10,10) , y-30,230,(20,50))
-        traffic_light1.draw(window)
+        traffic_light2 = Traffic_Light(y,240,(10,10) , y-30,230,(20,50))
+        semaforos.append(traffic_light2)
+        traffic_light2.draw(window)
         
-        traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
-        traffic_light1.draw(window)
-        
+        traffic_light2 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
+        semaforos.append(traffic_light2)
+        traffic_light2.draw(window)
+    return semaforos
+
+      
 def main():
     pygame.init()
+    CUSTOM_EVENT = pygame.USEREVENT + 1 # Set the timer interval for the custom event (2000 milliseconds = 2 seconds)
+    pygame.time.set_timer(CUSTOM_EVENT, 2000)
     cars=[]
+    semaforos = []
     generator = VehicleGenerator()
     generator.start()
 
@@ -418,18 +429,23 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        
+            elif event.type == CUSTOM_EVENT:
+                print("Cambiar monda")
         window.fill(GREEN)
         draw_elements()
         cars=generator.cars
+        semaforos = traffic_lights()
         for car in cars:
             pygame.draw.rect(window, car.color, car.rect)
             car.move()
+        
+        for semaforo in semaforos:
+            for car in cars:
+                car.check_collision(semaforo.collider_rect)
+
         pygame.display.flip()
         clock.tick(60)
     pygame.quit()
-
-
 if __name__ == '__main__':
     main()
     
