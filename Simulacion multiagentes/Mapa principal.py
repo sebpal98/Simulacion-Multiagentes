@@ -265,7 +265,6 @@ def traffic_lights():
         traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
         traffic_light1.draw(window)
         
-    
 def main():
     pygame.init()
     running = True
