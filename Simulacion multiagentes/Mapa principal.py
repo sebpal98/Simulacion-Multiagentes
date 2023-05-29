@@ -16,7 +16,7 @@ RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
 
 # MODIFICADOR DE COLOR CAJAS DE COLISION
-COLLIDER_COLOR = (0, 0, 255, 150)  # Azul transparente
+COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
 
 # Dimensiones de las carreteras
 ROAD_WIDTH = 120
@@ -234,19 +234,38 @@ def road_stops():
 
 def traffic_lights():
     CONSTANT_Y = 400
-    for y in range(170, window_width, 400):
+    # Semaforos horizontales, en orden de primera carretera y segunda
+    for y in range(170, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20))
         traffic_light1.draw(window)
+        
         traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
         traffic_light1.draw(window)
         
-    for y in range(240, window_width, 400):
+    # Semaforos horizontales, en orden de primera carretera y segunda
+    for y in range(240, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,260,(10,10) , y-10,280,(50,20))
         traffic_light1.draw(window)
+        
         traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
         traffic_light1.draw(window)
+        
+     # Semaforos horizontales, en orden de primera carretera y segunda
+    for y in range(260, window_width, CONSTANT_Y):
+        traffic_light1 = Traffic_Light(y,170,(10,10) , y+20,140,(20,50))
+        traffic_light1.draw(window)
+        
+        traffic_light1 = Traffic_Light(y,170+CONSTANT_Y,(10,10) , y+20,140+CONSTANT_Y,(20,50))
+        traffic_light1.draw(window)
+        
+    for y in range(150, window_width, CONSTANT_Y):
+        traffic_light1 = Traffic_Light(y,240,(10,10) , y-30,230,(20,50))
+        traffic_light1.draw(window)
+        
+        traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
+        traffic_light1.draw(window)
+        
     
- 
 def main():
     pygame.init()
     running = True
