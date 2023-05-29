@@ -51,6 +51,7 @@ class Carro:
             self.rect[0] -= 2.5
         elif self.direction == 'right':
             self.rect[0] += 2.5
+            
     def __str__(self):
         return f"Carrito: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
     def check_collision(self, rect):
