@@ -21,9 +21,9 @@ ORANGE = (255, 105, 0)
 BLUE = (135, 206, 235)
 RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
-SKIN =(253,221,202)
+SKIN =(0,0,255)
 # MODIFICADOR DE COLOR CAJAS DE COLISION
-COLLIDER_COLOR = (0, 0, 255, 255)  # Azul transparente
+COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
 
 # Dimensiones de las carreteras
 ROAD_WIDTH = 120
@@ -76,7 +76,6 @@ class Carro:
     
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
-
 
 class Bus:
     def __init__(self, x, y,width, height, color, direction):
@@ -142,6 +141,9 @@ class Person:
         transparent_surface.fill(COLLIDER_COLOR)
         screen.blit(transparent_surface, self.collider_rect)
         
+    def check_collision_with_carro(self, otro_carro):
+        return self.collider_rect.colliderect(otro_carro.rect)    
+    
     def check_collision(self, rect):
         return self.rect.colliderect(rect) 
     
@@ -191,6 +193,7 @@ class VehicleGenerator(threading.Thread):
         while bus==0:
             bus = self.generateBus()
         return bus
+    
     def validatePerson(self,person):
         while person==0:
             person = self.generatePerson()
@@ -242,24 +245,24 @@ class VehicleGenerator(threading.Thread):
         seed= int(numchoiced*10000* time.time())
         num = self.MonteCarlo(1,seed)
         coordenada = self.getPlaceToSpawnPersonByNum(num[0])
-        height=8
-        width=8
+        height=15
+        width=15
         direction=''
         if coordenada[0]==0:
             direction = 'right'
-            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+            return Person(coordenada[0],coordenada[1],width, height, SKIN, direction)
 
         if coordenada[0]==1190:
             direction = 'left'
-            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+            return Person(coordenada[0],coordenada[1],width, height, SKIN, direction)
         
         if coordenada[1]==0:
             direction='up'
-            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+            return Person(coordenada[0],coordenada[1],width, height, SKIN, direction)
 
         if coordenada[1]==790:
             direction='down'
-            return Person(coordenada[0],coordenada[1],width, height, RED, direction)
+            return Person(coordenada[0],coordenada[1],width, height, SKIN, direction)
         return 0
     def generateVehicle(self):
         gen = GenerateNums.get_numbers(350)
@@ -575,17 +578,21 @@ def traffic_lights():
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(170, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20))
+        traffic_light1.change_color()
         traffic_light1.draw(window)
         
         traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
+        traffic_light1.change_color()
         traffic_light1.draw(window)
         
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(240, window_width, CONSTANT_Y):
         traffic_light1 = Traffic_Light(y,260,(10,10) , y-10,280,(50,20))
+        traffic_light1.change_color()
         traffic_light1.draw(window)
         
         traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
+        traffic_light1.change_color()
         traffic_light1.draw(window)
         
      # Semaforos horizontales, en orden de primera carretera y segunda
@@ -603,11 +610,11 @@ def traffic_lights():
         traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
         traffic_light1.draw(window)
 
-# Configuración de la cuadrícula
-grid_size = 10
-grid_color = (200, 200, 200)  # Color de la cuadrícula en formato RGB
 def draw_grid():
     # Dibujar líneas verticales
+    # Configuración de la cuadrícula
+    grid_size = 10
+    grid_color = (200, 200, 200)  # Color de la cuadrícula en formato RGB
     for x in range(0, window_width, grid_size):
         pygame.draw.line(window, grid_color, (x, 0), (x, window_height))
 
