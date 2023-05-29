@@ -38,7 +38,7 @@ animation_speed = 40
 
 # Dimensiones de las aceras
 sidewalk_width = 20
-
+  
 window = pygame.display.set_mode((window_width, window_height), pygame.SRCALPHA)
 pygame.display.set_caption("Simulación de Cruce Vehicular")
 clock = pygame.time.Clock()
