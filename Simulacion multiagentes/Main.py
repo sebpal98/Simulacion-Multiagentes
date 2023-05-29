@@ -1,4 +1,11 @@
 import pygame
+import random
+import time
+import threading
+from collections import Counter
+from scipy.stats import chi2
+from datetime import datetime
+import GenerateNums
 
 # Dimensiones de la ventana
 window_width = 1200
@@ -16,7 +23,7 @@ RED = (255, 0, 0)
 GREEN_LIGHT = (0, 255, 0)
 
 # MODIFICADOR DE COLOR CAJAS DE COLISION
-COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
+COLLIDER_COLOR = (0, 0, 255, 250)  # Azul transparente
 
 # Dimensiones de las carreteras
 ROAD_WIDTH = 120
@@ -29,6 +36,141 @@ window = pygame.display.set_mode((window_width, window_height), pygame.SRCALPHA)
 pygame.display.set_caption("Simulación de Cruce Vehicular")
 clock = pygame.time.Clock()
 
+class Carro:
+    def __init__(self, x, y,width, height, color, direction):
+        self.rect = pygame.Rect(x,y,width,height)
+        self.color = color
+        self.direction = direction
+
+    def move(self):
+        if self.direction == 'up':
+            self.rect[1] += 2
+        elif self.direction == 'down':
+            self.rect[1] -= 2
+        elif self.direction == 'left':
+            self.rect[0] -= 2
+        elif self.direction == 'right':
+            self.rect[0] += 2
+    def __str__(self):
+        return f"Carrito: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
+    def check_collision(self, rect):
+        return self.rect.colliderect(rect)
+    
+class VehicleGenerator(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.cars = []
+        self.lock = threading.Lock()
+
+    def run(self):
+        while True:
+            self.addCarToCars(self.validVehicle(self.generateVehicle()))
+            for car in self.cars:
+                if not self.verifyIsInMap(car):
+                    self.deleteCarFromCars(car)
+            time.sleep(1.5)
+
+    def addCarToCars(self, car):
+            self.lock.acquire()  # Adquirir el bloqueo
+            try:
+                self.cars.append(car)
+            finally:
+                self.lock.release()  # Liberar el bloqueo
+    def deleteCarFromCars(self, car):
+            self.lock.acquire()  # Adquirir el bloqueo
+            try:
+                self.cars.remove(car)
+            finally:
+                self.lock.release()  # Liberar el bloqueo
+    def validVehicle(self,vehicle):
+        while vehicle==0:
+            vehicle = self.generateVehicle()
+        return vehicle
+    def verifyIsInMap(self, car):
+        if car.direction == 'right' and car.rect.x>1190:
+            return False
+        if car.direction == 'left' and car.rect.x<0:
+            return False
+        if car.direction == 'up' and car.rect.y>790:
+            return False
+        if car.direction == 'down' and car.rect.y<0:
+            return False
+        else:
+            return True
+    def generateVehicle(self):
+        gen = GenerateNums.get_numbers(350)
+        numchoiced = random.choice(gen)
+        print(f'NUMERO ELEGIDO: {numchoiced}')
+        seed= int(numchoiced*10000* time.time())
+        print(f'seed {seed}')
+        num = self.MonteCarlo(1,seed)
+        print(f'num: {num[0]}')
+        coordenada = self.getPlaceToSpawnByNum(num[0])
+        width=random.choice([30,50])
+        height=0
+        direction=''
+        if width == 50:
+            height = 30
+            if coordenada[0]==0:
+                direction = 'right'
+                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+
+            if coordenada[0]==1190:
+                direction = 'left'
+                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+
+        else:
+            height=50
+            if coordenada[1]==0:
+                direction='up'
+                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+
+            if coordenada[1]==790:
+                direction='down'
+                return Carro(coordenada[0],coordenada[1],width, height, (0, 0, 0), direction)
+        return 0
+    def getPlaceToSpawnByNum(self,number):
+        if number < 0.1:
+            return (0,230)
+        elif number < 0.2:
+            return (0, 630)
+        elif number < 0.3:
+            return (1190, 170)
+        elif number < 0.4:
+            return (1190, 570)
+        elif number < 0.5:
+            return (160, 0)
+        elif number < 0.6:
+            return (560, 0)
+        elif number < 0.7:
+            return (960, 0)
+        elif number < 0.8:
+            return (220,790)
+        elif number < 0.9:
+            return (620,790)
+        else:
+            return (1020,790)
+
+    def MonteCarlo(self,quantity, seed):
+        generated_nums = []
+        xi = seed
+        while quantity > 0:
+            x2i = xi * xi
+            extension = len(str(x2i))
+            quantity -= 1
+            extracted = self.extractNums(x2i, extension)
+            generated_nums.append(extracted / 10000.0)
+            xi = extracted
+        return generated_nums
+
+    def extractNums(self,num, extension):
+        segmento = 0
+        num_str = str(num)
+        inicio = (extension - 4) // 2
+        fin = inicio + 4
+        if len(num_str) >= 4:
+            segmento = int(num_str[inicio:fin])
+        return segmento
 
 class Traffic_Light:
     LIGHT_COLOR = (255, 0, 0)  # Rojo
@@ -267,6 +409,10 @@ def traffic_lights():
         
 def main():
     pygame.init()
+    cars=[]
+    generator = VehicleGenerator()
+    generator.start()
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -275,10 +421,14 @@ def main():
         
         window.fill(GREEN)
         draw_elements()
+        cars=generator.cars
+        for car in cars:
+            pygame.draw.rect(window, car.color, car.rect)
+            car.move()
         pygame.display.flip()
         clock.tick(60)
-
     pygame.quit()
+
 
 if __name__ == '__main__':
     main()
