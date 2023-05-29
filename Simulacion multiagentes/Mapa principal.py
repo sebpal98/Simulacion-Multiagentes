@@ -241,9 +241,9 @@ def traffic_lights():
         traffic_light1.draw(window)
         
     for y in range(240, window_width, 400):
-        traffic_light1 = Traffic_Light(y,260,(10,10) , y-30,280,(50,20))
+        traffic_light1 = Traffic_Light(y,260,(10,10) , y-10,280,(50,20))
         traffic_light1.draw(window)
-        traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-30,280+CONSTANT_Y,(50,20))
+        traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
         traffic_light1.draw(window)
     
  
