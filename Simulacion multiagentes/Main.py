@@ -195,9 +195,9 @@ class VehicleGenerator(threading.Thread):
         elif number < 0.2:
             return (0, 630)
         elif number < 0.3:
-            return (1190, 170)
+            return (1190, 157)
         elif number < 0.4:
-            return (1190, 570)
+            return (1190, 557)
         elif number < 0.5:
             return (160, 0)
         elif number < 0.6:
@@ -205,11 +205,11 @@ class VehicleGenerator(threading.Thread):
         elif number < 0.7:
             return (960, 0)
         elif number < 0.8:
-            return (220,790)
+            return (235,790)
         elif number < 0.9:
-            return (620,790)
+            return (635,790)
         else:
-            return (1020,790)
+            return (1035,790)
 
     def MonteCarlo(self,quantity, seed):
         generated_nums = []
