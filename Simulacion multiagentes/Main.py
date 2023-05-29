@@ -214,6 +214,7 @@ class VehicleGenerator(threading.Thread):
                 return Carro(coordenada[0],coordenada[1],width, height, color, direction)
         return 0
     
+    
     def getPlaceToSpawnByNum(self,number):
         if number < 0.1:
             return (0,230)
