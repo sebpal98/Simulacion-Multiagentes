@@ -29,6 +29,7 @@ COLLIDER_COLOR = (0, 0, 255, 0)  # Azul transparente
 ROAD_WIDTH = 120
 ROAD_HEIGHT = 30
 
+arr_traffic_Lights = []
 # Velocidad Carros, Buses, peatones y animacion
 car_speed = 3
 bus_speed = 2
@@ -364,8 +365,8 @@ class VehicleGenerator(threading.Thread):
 class Traffic_Light:
     LIGHT_COLOR = (255, 0, 0)  # Rojo
 
-    def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size):
-        self.color = Traffic_Light.LIGHT_COLOR
+    def __init__(self, x_light, y_light, light_size, x_collider, y_collider, collider_size,color):
+        self.color = color
         self.light_rect = pygame.Rect(x_light, y_light, light_size[0], light_size[1])
         self.collider_rect = pygame.Rect(x_collider, y_collider, collider_size[0], collider_size[1])
 
@@ -403,11 +404,11 @@ def check_collision_between_cars(carros):
             if carro1.check_collision_with_carro(carro2):
                 carro1.move()  # Detener movimiento si hay colisión
 
-def draw_elements():
+def draw_elements(GROUP_1, GROUP_2, GROUP_3, GROUP_4):
     roads()
     cross_walks()
     road_stops()
-    traffic_lights()
+    traffic_lights(GROUP_1, GROUP_2, GROUP_3, GROUP_4)
     # draw_grid()
     # mouse_coordenates()
 
@@ -573,42 +574,55 @@ def road_stops():
     bus_stop7 = Bus_Stop(340,530,(60,20) ,340,550,(5,40))
     bus_stop7.draw(window)
 
-def traffic_lights():
+def traffic_lights(GROUP_1, GROUP_2, GROUP_3, GROUP_4):
     CONSTANT_Y = 400
+
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(170, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,150,(10,10) , y-30,120,(50,20))
-        traffic_light1.change_color()
+        traffic_light1 = Traffic_Light(y, 150, (10, 10), y - 30, 120, (50, 20), GROUP_1)
         traffic_light1.draw(window)
-        
-        traffic_light1 = Traffic_Light(y,150+CONSTANT_Y,(10,10) , y-30,120+CONSTANT_Y,(50,20))
-        traffic_light1.change_color()
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
+        traffic_light1 = Traffic_Light(y, 150 + CONSTANT_Y, (10, 10), y - 30, 120 + CONSTANT_Y, (50, 20), GROUP_1)
         traffic_light1.draw(window)
-        
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
     # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(240, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,260,(10,10) , y-10,280,(50,20))
-        traffic_light1.change_color()
+        traffic_light1 = Traffic_Light(y, 260, (10, 10), y - 10, 280, (50, 20), GROUP_2)
         traffic_light1.draw(window)
-        
-        traffic_light1 = Traffic_Light(y,260+CONSTANT_Y,(10,10) , y-10,280+CONSTANT_Y,(50,20))
-        traffic_light1.change_color()
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
+        traffic_light1 = Traffic_Light(y, 260 + CONSTANT_Y, (10, 10), y - 10, 280 + CONSTANT_Y, (50, 20), GROUP_2)
         traffic_light1.draw(window)
-        
-     # Semaforos horizontales, en orden de primera carretera y segunda
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
+    # Semaforos horizontales, en orden de primera carretera y segunda
     for y in range(260, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,170,(10,10) , y+20,140,(20,50))
+        traffic_light1 = Traffic_Light(y, 170, (10, 10), y + 20, 140, (20, 50), GROUP_3)
         traffic_light1.draw(window)
-        
-        traffic_light1 = Traffic_Light(y,170+CONSTANT_Y,(10,10) , y+20,140+CONSTANT_Y,(20,50))
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
+        traffic_light1 = Traffic_Light(y, 170 + CONSTANT_Y, (10, 10), y + 20, 140 + CONSTANT_Y, (20, 50), GROUP_3)
         traffic_light1.draw(window)
-        
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
     for y in range(150, window_width, CONSTANT_Y):
-        traffic_light1 = Traffic_Light(y,240,(10,10) , y-30,230,(20,50))
+        traffic_light1 = Traffic_Light(y, 240, (10, 10), y - 30, 230, (20, 50), GROUP_4)
         traffic_light1.draw(window)
-        
-        traffic_light1 = Traffic_Light(y,240+CONSTANT_Y,(10,10) , y-30,230+CONSTANT_Y,(20,50))
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
+
+        traffic_light1 = Traffic_Light(y, 240 + CONSTANT_Y, (10, 10), y - 30, 230 + CONSTANT_Y, (20, 50), GROUP_4)
         traffic_light1.draw(window)
+        if (len(arr_traffic_Lights) < 25):
+            arr_traffic_Lights.append(traffic_light1)
 
 def draw_grid():
     # Dibujar líneas verticales
@@ -639,28 +653,40 @@ def main():
     cars=[]
     generator = VehicleGenerator()
     generator.start()
-
+    GROUP_1 = (0, 255, 0)  # verde
+    GROUP_2 = (255, 0, 0)  # rojo
+    GROUP_3 = (255, 0, 0)  # ROJO
+    GROUP_4 = (255, 0, 0)  # ROJO
+    CHANGE_LIGTHS = pygame.USEREVENT + 1
+    pygame.time.set_timer(CHANGE_LIGTHS, 2000)  # Set the timer interval for the custom event (2 seconds)
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        
+            elif event.type == CHANGE_LIGTHS:  # Event triggered every two seconds
+                if GROUP_1 == (0, 255, 0):
+                    GROUP_1 = (255, 0, 0)
+                    GROUP_2 = (0, 255, 0)
+                elif GROUP_2 == (0, 255, 0):
+                    GROUP_2 = (255, 0, 0)
+                    GROUP_3 = (0, 255, 0)
+                elif GROUP_3 == (0, 255, 0):
+                    GROUP_3 = (255, 0, 0)
+                    GROUP_4 = (0, 255, 0)
+                elif GROUP_4 == (0, 255, 0):
+                    GROUP_4 = (255, 0, 0)
+                    GROUP_1 = (0, 255, 0)
         window.fill(GREEN)
-        draw_elements()
-        
-
+        draw_elements(GROUP_1, GROUP_2, GROUP_3, GROUP_4)
         cars=generator.cars
         for car in cars:
             car.draw_collider(window)
             pygame.draw.rect(window, car.color, car.rect)
             car.move()
-        check_collision_between_cars(cars)
-        
+        check_collision_between_cars(cars)      
         pygame.display.flip()
-
         clock.tick(animation_speed)
-
     pygame.quit()
 
 
