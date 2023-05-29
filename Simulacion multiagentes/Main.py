@@ -29,12 +29,19 @@ COLLIDER_COLOR = (0, 0, 255, 255)  # Azul transparente
 ROAD_WIDTH = 120
 ROAD_HEIGHT = 30
 
+# Velocidad Carros, Buses, peatones y animacion
+car_speed = 3
+bus_speed = 2
+person_speed = 1 
+animation_speed = 40
+
 # Dimensiones de las aceras
 sidewalk_width = 20
 
 window = pygame.display.set_mode((window_width, window_height), pygame.SRCALPHA)
 pygame.display.set_caption("Simulación de Cruce Vehicular")
 clock = pygame.time.Clock()
+
 
 class Carro:
     def __init__(self, x, y,width, height, color, direction):
@@ -45,17 +52,17 @@ class Carro:
 
     def move(self):
         if self.direction == 'up':
-            self.collider_rect.y += 3
-            self.rect[1] += 3
+            self.collider_rect.y += car_speed
+            self.rect[1] += car_speed
         elif self.direction == 'down':
-            self.collider_rect.y -= 3
-            self.rect[1] -= 3
+            self.collider_rect.y -= car_speed
+            self.rect[1] -= car_speed
         elif self.direction == 'left':
-            self.collider_rect.x -= 3
-            self.rect[0] -= 3
+            self.collider_rect.x -= car_speed
+            self.rect[0] -= car_speed
         elif self.direction == 'right':
-            self.collider_rect.x += 3
-            self.rect[0] += 3
+            self.collider_rect.x += car_speed
+            self.rect[0] += car_speed
     def __str__(self):
         return f"Carrito: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
     
@@ -63,6 +70,9 @@ class Carro:
         transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
         transparent_surface.fill(COLLIDER_COLOR)
         screen.blit(transparent_surface, self.collider_rect)
+    
+    def check_collision_with_carro(self, otro_carro):
+        return self.collider_rect.colliderect(otro_carro.rect)
     
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
@@ -77,27 +87,34 @@ class Bus:
 
     def move(self):
         if self.direction == 'up':
-            self.collider_rect.y += 2
-            self.rect[1] += 2
+            self.collider_rect.y += bus_speed
+            self.rect[1] += bus_speed
         elif self.direction == 'down':
-            self.collider_rect.y -= 2
-            self.rect[1] -= 2
+            self.collider_rect.y -= bus_speed
+            self.rect[1] -= bus_speed
         elif self.direction == 'left':
-            self.collider_rect.x -= 2
-            self.rect[0] -= 2
+            self.collider_rect.x -= bus_speed
+            self.rect[0] -= bus_speed
         elif self.direction == 'right':
-            self.collider_rect.x += 2
-            self.rect[0] += 2
+            self.collider_rect.x += bus_speed
+            self.rect[0] += bus_speed
+        
     def __str__(self):
         return f"Bus: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
+      
     def draw_collider(self,screen):
         transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
         transparent_surface.fill(COLLIDER_COLOR)
         screen.blit(transparent_surface, self.collider_rect)
+
+    def check_collision_with_carro(self, otro_carro):
+        return self.collider_rect.colliderect(otro_carro.rect)
+    
     def check_collision(self, rect):
         return self.rect.colliderect(rect)
 
 class Person:
+
     def __init__(self, x, y,width, height, color, direction):
         self.rect = pygame.Rect(x,y,width,height)
         self.color = color
@@ -106,25 +123,28 @@ class Person:
 
     def move(self):
         if self.direction == 'up':
-            self.collider_rect.y += 1
-            self.rect[1] += 1
+
+            self.collider_rect.y += person_speed
+            self.rect[1] += person_speed
         elif self.direction == 'down':
-            self.collider_rect.y += 1
-            self.rect[1] -= 1
+            self.collider_rect.y += person_speed
+            self.rect[1] -= person_speed
         elif self.direction == 'left':
-            self.collider_rect.x += 1
-            self.rect[0] -= 1
+            self.collider_rect.x += person_speed
+            self.rect[0] -= person_speed
         elif self.direction == 'right':
-            self.collider_rect.x += 1
-            self.rect[0] += 1
+            self.collider_rect.x += person_speed
+            self.rect[0] += person_speed
     def __str__(self):
         return f"Person: rect: {self.rect}, color: {self.color}, direction: {self.direction}"
     def draw_collider(self,screen):
         transparent_surface = pygame.Surface((self.collider_rect.width, self.collider_rect.height), pygame.SRCALPHA)
         transparent_surface.fill(COLLIDER_COLOR)
         screen.blit(transparent_surface, self.collider_rect)
+        
     def check_collision(self, rect):
         return self.rect.colliderect(rect) 
+    
 class VehicleGenerator(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -372,6 +392,14 @@ class Bus_Stop:
         screen.blit(transparent_surface, self.collider_rect)
         pygame.draw.rect(screen, ORANGE, self.rect)
 
+def check_collision_between_cars(carros):
+    for i in range(len(carros)):
+        for j in range(i+1, len(carros)):
+            carro1 = carros[i]
+            carro2 = carros[j]
+            if carro1.check_collision_with_carro(carro2):
+                carro1.move()  # Detener movimiento si hay colisión
+
 def draw_elements():
     roads()
     cross_walks()
@@ -613,13 +641,19 @@ def main():
         
         window.fill(GREEN)
         draw_elements()
+        
+
         cars=generator.cars
         for car in cars:
             car.draw_collider(window)
             pygame.draw.rect(window, car.color, car.rect)
             car.move()
+        check_collision_between_cars(cars)
+        
         pygame.display.flip()
-        clock.tick(40)
+
+        clock.tick(animation_speed)
+
     pygame.quit()
 
 
