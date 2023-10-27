@@ -173,7 +173,7 @@ class VehicleGenerator(threading.Thread):
                     self.deleteCarFromCars(car)
             for bus in self.busses:
                 if not self.verifyIsInMap(bus):
-                    self.deletebusFrombuss(bus)
+                    self.deleteBusFromBusses(bus)
             for person in self.persons:
                 if not self.verifyIsInMap(person):
                     self.deletePersonFromPersons(person)
